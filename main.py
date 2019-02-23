@@ -3,9 +3,9 @@
 
 # BEFORE RUNNING THIS:
 # 
-# Run setup, install nltk data.
+# Run setup.py, install nltk data.
 # Required: 
-#   beautifulsoup (pip install beautifulsoup4)
+#   beautifulsoup (pip3 install beautifulsoup4)
 #   nltk (pip install nltk)
 #   lxml (pip install lxml)
 
@@ -27,7 +27,7 @@ article_text = ""
 for p in paragraphs:  
     article_text += p.text
 
-# Removing Square Brackets and Extra Spaces
+# Removing Square Brackets and Extra Spaces -- specific to wikipedia articles, wikipedia citations
 article_text = re.sub(r'\[[0-9]*\]', ' ', article_text)  
 article_text = re.sub(r'\s+', ' ', article_text)
 
@@ -35,9 +35,10 @@ article_text = re.sub(r'\s+', ' ', article_text)
 formatted_article_text = re.sub('[^a-zA-Z]', ' ', article_text )  
 formatted_article_text = re.sub(r'\s+', ' ', formatted_article_text)  
 
+# sent_tokenize breaks target text into sentences.
 sentence_list = nltk.sent_tokenize(article_text)  
 
-
+# Remove the most common words ("the", "this", ... )
 stopwords = nltk.corpus.stopwords.words('english')
 
 word_frequencies = {}  
