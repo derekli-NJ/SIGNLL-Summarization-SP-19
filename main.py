@@ -10,7 +10,7 @@
 #   lxml (pip install lxml)
 
 import bs4 as bs  
-import urllib.request  
+import urllib.request
 import re
 import heapq  
 import nltk
