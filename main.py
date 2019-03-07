@@ -42,7 +42,7 @@ for i in sentence_list:
         if j in i:
             is_important = True
             break
-    if is_important:
+    if is_important and prev!= None and i not in important_sentences:
         important_sentences.append(prev + "\n" + i)
     prev = i
 
