@@ -1,19 +1,9 @@
-# https://stackabuse.com/text-summarization-with-nltk-in-python/?fbclid=IwAR0hntNquE08NtGwK38KLH1Lut1axx8tor6TIYrztJKMP4VLgeHITzKQbQs
-# Code copied from here ^ 
-
-# BEFORE RUNNING THIS:
-# 
-# Run setup.py, install nltk data.
-# Required: 
-#   beautifulsoup (pip3 install beautifulsoup4)
-#   nltk (pip install nltk)
-#   lxml (pip install lxml)
-
 import bs4 as bs  
 import urllib.request
 import re
 import heapq  
 import nltk
+from rake_nltk import Rake
 
 scraped_data = urllib.request.urlopen('https://en.wikipedia.org/wiki/Artificial_intelligence')  
 article = scraped_data.read()
@@ -38,35 +28,22 @@ formatted_article_text = re.sub(r'\s+', ' ', formatted_article_text)
 # sent_tokenize breaks target text into sentences.
 sentence_list = nltk.sent_tokenize(article_text)  
 
-# Remove the most common words ("the", "this", ... )
-stopwords = nltk.corpus.stopwords.words('english')
+r = Rake(min_length=2) # Uses stopwords for english from NLTK, and all puntuation characters.
+r.extract_keywords_from_text(article_text)
+temp_keywords = r.get_ranked_phrases_with_scores()[:20]
+keywords = [x[1] for x in temp_keywords]
 
-word_frequencies = {}  
-for word in nltk.word_tokenize(formatted_article_text):  
-    if word not in stopwords:
-        if word not in word_frequencies.keys():
-            word_frequencies[word] = 1
-        else:
-            word_frequencies[word] += 1
+important_sentences = [sentence_list[0]]
 
+prev_sentence = ""
+for i in sentence_list:
+    is_important = False
+    for j in keywords:
+        if j in i:
+            is_important = True
+            break
+    if is_important:
+        important_sentences.append(prev + "\n" + i)
+    prev = i
 
-maximum_frequncy = max(word_frequencies.values())
-
-for word in word_frequencies.keys():  
-    word_frequencies[word] = (word_frequencies[word]/maximum_frequncy)
-
-
-sentence_scores = {}  
-for sent in sentence_list:  
-    for word in nltk.word_tokenize(sent.lower()):
-        if word in word_frequencies.keys():
-            if len(sent.split(' ')) < 30:
-                if sent not in sentence_scores.keys():
-                    sentence_scores[sent] = word_frequencies[word]
-                else:
-                    sentence_scores[sent] += word_frequencies[word]
-
-summary_sentences = heapq.nlargest(7, sentence_scores, key=sentence_scores.get)
-
-summary = ' '.join(summary_sentences)  
-print(summary) 
+print("\n".join(important_sentences))
