@@ -39,4 +39,4 @@ def getFile(index):
         #print(highlights)
         return Article(text, highlights)
 
-print(nextFile().text)
+#print(nextFile().text)

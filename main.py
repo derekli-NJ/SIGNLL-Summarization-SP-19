@@ -51,4 +51,7 @@ def summarize(text):
 
     return "\n".join(important_sentences)
 
-print(summarize(parser.getFile(0).text))
+article = getFile(0).text
+print(article)
+print()
+print(summarize(article))
